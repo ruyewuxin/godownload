@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"godownload/bar"
 	"io"
 	"log"
 	"math"
@@ -17,6 +16,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/ruyewuxin/bar"
 )
 
 const (
@@ -78,7 +79,7 @@ func NewGoGet() *GoGet {
 	return get
 }
 
-var urlFlag = flag.String("u", "https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png", "Fetch file url")
+var urlFlag = flag.String("u", "https://www.baidu.com/img/fddong_e2dd633ee46695630e60156c91cda80a.gif", "Fetch file url")
 
 // var cntFlag = flag.Int("c", 1, "Fetch concurrently counts")
 
@@ -135,7 +136,7 @@ func main() {
 		tempFile, err := os.OpenFile(get.FilePath+"."+rangeI, os.O_RDONLY|os.O_APPEND, 0)
 		if err != nil {
 			tempFile, _ = os.Create(get.FilePath + "." + rangeI)
-			tempFile.Close()
+			// tempFile.Close()
 		} else {
 			fi, err := tempFile.Stat()
 			if err == nil {
@@ -220,6 +221,6 @@ func (get *GoGet) Merge() {
 			log.Printf("Merge #%d error %v.\n", i, err)
 		}
 		tempFile.Close()
-		// get.TempFiles[i].Close()
+		get.TempFiles[i].Close()
 	}
 }
