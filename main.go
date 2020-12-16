@@ -45,8 +45,7 @@ type GoGet struct {
 	TempFiles     []*os.File
 	WG            sync.WaitGroup
 	lock          sync.Mutex //互斥锁
-	cur           int
-	bar           bar.Bar //进度条
+	bar           bar.Bar    //进度条
 }
 
 //GetCurPath 获取当前文件执行的路径
@@ -79,7 +78,7 @@ func NewGoGet() *GoGet {
 	return get
 }
 
-var urlFlag = flag.String("u", "https://www.baidu.com/img/fddong_e2dd633ee46695630e60156c91cda80a.gif", "Fetch file url")
+var urlFlag = flag.String("u", "http://www.baidu.com/baidu.html", "Fetch file url")
 
 // var cntFlag = flag.Int("c", 1, "Fetch concurrently counts")
 
@@ -89,10 +88,12 @@ func main() {
 	downloadStartTime := time.Now()
 
 	req, err := http.NewRequest("HEAD", get.URL, nil)
+	// fmt.Printf("%+v\n", req)
 	if err != nil {
 		log.Panicf("Get request error %v.\n", err)
 	}
 	resp, err := get.GetClient.Do(req)
+	// fmt.Printf("%+v\n", resp)
 	// resp, err := http.Get(get.URL)
 
 	if err != nil {
@@ -146,7 +147,7 @@ func main() {
 		get.TempFiles = append(get.TempFiles, tempFile)
 	}
 
-	get.bar.NewOption(0, get.Cnt)
+	get.bar.NewBar(0, get.Cnt)
 	get.Latch = get.Cnt
 	for i := range get.DownloadRange {
 		get.WG.Add(1)
@@ -201,14 +202,14 @@ func (get *GoGet) Download(i int) {
 	}
 	defer resp.Body.Close()
 	get.lock.Lock() //加锁
-	get.cur++
+	get.bar.Increment()
 	get.Watch()
 	get.lock.Unlock() //解锁
 }
 
 //Watch ...
 func (get *GoGet) Watch() {
-	get.bar.Play(get.cur)
+	get.bar.Play()
 }
 
 //Merge ...
