@@ -69,7 +69,7 @@ func NewGoGet() *GoGet {
 
 	if ostype == "windows" {
 		get.FilePath = GetCurPath() + "\\" + urlSlice[len(urlSlice)-1]
-	} else if ostype == "linux" {
+	} else {
 		get.FilePath = GetCurPath() + "/" + urlSlice[len(urlSlice)-1]
 	}
 
